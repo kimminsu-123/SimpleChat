@@ -15,6 +15,7 @@ namespace Chungkang.GameNetwork.Common.Message
         FriendRequest,
         AcceptFriendRequest,
         RefuseFriendRequest,
+        DeleteFriend,
 
         Success = 200,
         Fail = -1

@@ -111,5 +111,47 @@ namespace Chungkang.GameNetwork.Service
                 throw;
             }
         }
+
+        public bool DeleteFriend(Friend? friend)
+        {
+            if (friend == null) throw new ArgumentException("delete friend: friend is null");
+
+            try
+            {
+                return _service.DeleteFriend(friend);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<FriendRequest> GetFriendRequests(UserInfo? user)
+        {
+            if (user == null) throw new ArgumentException("delete friend: friend is null");
+
+            try
+            {
+                return _service.GetFriendRequests(user);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<Friend> GetFriends(UserInfo? user)
+        {
+            if (user == null) throw new ArgumentException("delete friend: friend is null");
+
+            try
+            {
+                return _service.GetFriends(user);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

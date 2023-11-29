@@ -41,19 +41,48 @@ namespace Chungkang.GameNetwork.Common.Util
     public class FriendRequest
     {
         [JsonPropertyName("sourceId")]
-        public string sourceId { get; set; }
+        public string MyId { get; set; }
         [JsonPropertyName("targetId")]
-        public string targetId { get; set; }
+        public string FriendId { get; set; }
 
-        public FriendRequest(string sourceId, string targetId)
+        public FriendRequest(string myId, string friendId)
         {
-            this.sourceId = sourceId;
-            this.targetId = targetId;
+            MyId = myId;
+            FriendId = friendId;
         }
 
         public override string ToString()
         {
-            return $"sourceId: {sourceId}, targetId: {targetId}";
+            return $"myId: {MyId}, friendId: {FriendId}";
+        }
+    }
+
+    public enum FriendFlag
+    {
+        Nomal = 1,
+        Deleted
+    }
+
+    [Serializable]
+    public class Friend
+    {
+        [JsonPropertyName("myId")]
+        public string MyId { get; set; }
+        [JsonPropertyName("friendId")]
+        public string FriendId { get; set; }
+        [JsonPropertyName("Flag")]
+        public FriendFlag Flag { get; set; }
+
+        public Friend(string myId, string friendId, FriendFlag flag)
+        {
+            MyId = myId;
+            FriendId = friendId;
+            Flag = flag;
+        }
+
+        public override string ToString()
+        {
+            return $"myId: {MyId}, friendId: {FriendId}, flag: {Flag}";
         }
     }
 
@@ -65,6 +94,7 @@ namespace Chungkang.GameNetwork.Common.Util
         FriendRequest,
         AcceptFriendRequest,
         RefuseFriendRequest,
+        DeleteFriend
     }
 
     [Serializable]

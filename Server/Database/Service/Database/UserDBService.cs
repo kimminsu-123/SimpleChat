@@ -113,8 +113,8 @@ VALUES (@REQ_ID, @TARGET_ID, @FLAG)
 
             var parameters = new Params()
             {
-                new Param("@REQ_ID", request.sourceId),
-                new Param("@TARGET_ID", request.targetId),
+                new Param("@REQ_ID", request.MyId),
+                new Param("@TARGET_ID", request.FriendId),
                 new Param("@FLAG", 1),
             };
 
@@ -145,38 +145,34 @@ VALUES (@REQ_ID, @TARGET_ID, @FLAG)
   WHERE REQ_ID = @REQ_ID
     AND TARGET_ID = @TARGET_ID";
 
-            var insertSql1 = @"
- INSERT INTO T_FRIEND (USER_ID, TARGET_ID)
- VALUES (@USER_ID, @FRIEND_ID)";
-
-            var insertSql2 = @"
- INSERT INTO T_FRIEND (USER_ID, TARGET_ID)
- VALUES (@FRIEND_ID, @USER_ID)";
+            var insertSql = @"
+ INSERT INTO T_FRIEND (USER_ID, TARGET_ID, FLAG)
+ VALUES (@USER_ID, @FRIEND_ID, '1')";
 
             var parameters = new Params()
             {
-                new Param("@REQ_ID", request.sourceId),
-                new Param("@TARGET_ID", request.targetId),
+                new Param("@REQ_ID", request.MyId),
+                new Param("@TARGET_ID", request.FriendId),
             };
 
             var parameters2 = new Params()
             {
-                new Param("@USER_ID", request.sourceId),
-                new Param("@FRIEND_ID", request.targetId),
+                new Param("@USER_ID", request.MyId),
+                new Param("@FRIEND_ID", request.FriendId),
             };
 
             var parameters3 = new Params()
             {
-                new Param("@USER_ID", request.targetId),
-                new Param("@FRIEND_ID", request.sourceId),
+                new Param("@USER_ID", request.FriendId),
+                new Param("@FRIEND_ID", request.MyId),
             };
 
             try
             {
                 Handler.BeginTransaction();
                 var ret = Handler.ExecuteNonQuery(sql, parameters);
-                ret += Handler.ExecuteNonQuery(insertSql1, parameters2);
-                ret += Handler.ExecuteNonQuery(insertSql2, parameters3);
+                ret += Handler.ExecuteNonQuery(insertSql, parameters2);
+                ret += Handler.ExecuteNonQuery(insertSql, parameters3);
                 Handler.CommitTransaction();
 
                 return ret > 0;
@@ -205,8 +201,8 @@ VALUES (@REQ_ID, @TARGET_ID, @FLAG)
 
             var parameters = new Params()
             {
-                new Param("@REQ_ID", request.sourceId),
-                new Param("@TARGET_ID", request.targetId),
+                new Param("@REQ_ID", request.MyId),
+                new Param("@TARGET_ID", request.FriendId),
             };
 
             try
@@ -225,6 +221,90 @@ VALUES (@REQ_ID, @TARGET_ID, @FLAG)
             {
                 parameters.Dispose();
             }
+        }
+
+        public bool DeleteFriend(Friend delFriend)
+        {
+            var sql = @"
+ UPDATE T_FRIEND
+    SET FLAG = '2',
+        MOD_DT = datetime('now', 'localtime'),
+  WHERE USER_ID = @USER_ID
+    AND TARGET_ID = @TARGET_ID";
+
+            var parameters = new Params()
+            {
+                new Param("@USER_ID", delFriend.MyId),
+                new Param("@TARGET_ID", delFriend.FriendId),
+            };
+
+            var parameters2 = new Params()
+            {
+                new Param("@USER_ID", delFriend.FriendId),
+                new Param("@TARGET_ID", delFriend.MyId),
+            };
+
+            try
+            {
+                Handler.BeginTransaction();
+                var ret = Handler.ExecuteNonQuery(sql, parameters);
+                ret += Handler.ExecuteNonQuery(sql, parameters);
+                Handler.CommitTransaction();
+                return ret > 0;
+            }
+            catch (Exception)
+            {
+                Handler.RollbackTransaction();
+                throw;
+            }
+            finally
+            {
+                parameters.Dispose();
+            }
+        }
+
+        public List<FriendRequest> GetFriendRequests(UserInfo user)
+        {
+            var sql = @"
+SELECT  B.USER_ID, B.NICKNAME
+  FROM  T_FRIEND AS A
+ WHERE  A.USER_ID = @USER_ID
+ INNER JOIN USER_M AS B
+    ON  A.USER_ID = B.USER_ID";
+
+            var parameters = new Params()
+            {
+                new Param("@USER_ID", user.Id),
+            };
+
+            var list = new List<FriendRequest>();
+
+            try
+            {
+                var reader = Handler.ExecuteReader(sql, parameters);
+
+                while (reader.Read())
+                {
+                    list.Add(new FriendRequest(
+                        (string) reader["REQ_ID"],
+                        (string) reader["TARGET_ID"]
+                        ));
+                }
+                return list;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                parameters.Dispose();
+            }
+        }
+
+        public List<Friend> GetFriends(UserInfo user)
+        {
+            throw new NotImplementedException();
         }
     }
 }

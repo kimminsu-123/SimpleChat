@@ -98,11 +98,12 @@ CREATE TABLE IF NOT EXISTS T_FRIEND
 (
 USER_ID TEXT NOT NULL, 
 FRIEND_ID TEXT NOT NULL,
+FLAG TEXT NOT NULL DEFAULT '1',
 INS_DT TEXT DEFAULT (datetime('now', 'localtime')), 
 INT_US TEXT DEFAULT 'system', 
 MOD_DT TEXT DEFAULT (datetime('now', 'localtime')), 
 MOD_US TEXT DEFAULT 'system',
-PRIMARY KEY (USER_ID, FRIEND_ID)
+PRIMARY KEY (USER_ID, FRIEND_ID, FLAG)
 ) ";
             try
             {

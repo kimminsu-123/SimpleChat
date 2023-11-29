@@ -63,6 +63,10 @@ namespace Chungkang.GameNetwork.Network.Handler
                         req = JsonSerializer.Deserialize<FriendRequest>(msg.JsonMessage);
                         serverMsg.ReturnFlag = HandleRefuseFriendRequest(req, out detailMsg, out retValue);
                         break;
+                    case MessageFlag.DeleteFriend:
+                        var friend = JsonSerializer.Deserialize<Friend>(msg.JsonMessage);
+                        serverMsg.ReturnFlag = HandleDeleteFriend(friend, out detailMsg, out retValue);
+                        break;
                     default:
                         detailMsg = string.Empty;
                         retValue = false;
@@ -199,6 +203,7 @@ namespace Chungkang.GameNetwork.Network.Handler
 
             return ServerMessageFlag.AcceptFriendRequest;
         }
+
         private ServerMessageFlag HandleRefuseFriendRequest(FriendRequest? req, out string msg, out bool retValue)
         {
             msg = "요청을 거절하였습니다.";
@@ -217,6 +222,26 @@ namespace Chungkang.GameNetwork.Network.Handler
             }
 
             return ServerMessageFlag.RefuseFriendRequest;
+        }
+
+        private ServerMessageFlag HandleDeleteFriend(Friend? friend, out string msg, out bool retValue)
+        {
+            msg = "친구 삭제에 성공하였습니다.";
+
+            try
+            {
+                retValue = _userService.DeleteFriend(friend);
+                if (!retValue)
+                    msg = "친구 삭제에 실패했습니다.";
+            }
+            catch (Exception err)
+            {
+                msg = err.Message;
+                retValue = false;
+                throw;
+            }
+
+            return ServerMessageFlag.DeleteFriend;
         }
     }
 }
