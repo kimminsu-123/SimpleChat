@@ -32,6 +32,12 @@ namespace Chungkang.GameNetwork.Network.Handler
                 case ServerMessageFlag.Register:
                     type = EventType.OnRegister;
                     break;
+                case ServerMessageFlag.FriendList:
+                    type = EventType.OnInqFriendList;
+                    break;
+                case ServerMessageFlag.FriendRequestList:
+                    type = EventType.OnInqFriendRequestList;
+                    break;
             }
 
             EventManager.Instance.PostNotification(type, this, serverMsg);

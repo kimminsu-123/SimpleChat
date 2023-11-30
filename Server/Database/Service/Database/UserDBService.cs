@@ -107,15 +107,15 @@ VALUES (@ID, @PW, @NICKNAME)
         public bool FriendRequest(FriendRequest request)
         {
             var sql = @"
-INSERT INTO T_FRIEND_REQUEST (REQ_ID, TARGET_ID, FLAG)
-VALUES (@REQ_ID, @TARGET_ID, @FLAG)
+INSERT INTO T_FRIEND_REQUEST (REQ_ID, TARGET_ID, REQ_FLAG)
+VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
 ";
 
             var parameters = new Params()
             {
-                new Param("@REQ_ID", request.MyId),
-                new Param("@TARGET_ID", request.FriendId),
-                new Param("@FLAG", 1),
+                new Param("@REQ_ID", request.MyInfo),
+                new Param("@TARGET_ID", request.FriendInfo),
+                new Param("@REQ_FLAG", "1"),
             };
 
             try
@@ -140,31 +140,31 @@ VALUES (@REQ_ID, @TARGET_ID, @FLAG)
         {
             var sql = @"
  UPDATE T_FRIEND_REQUEST
-    SET FLAG = '2',
+    SET REQ_FLAG = '2',
         MOD_DT = datetime('now', 'localtime'),
   WHERE REQ_ID = @REQ_ID
     AND TARGET_ID = @TARGET_ID";
 
             var insertSql = @"
- INSERT INTO T_FRIEND (USER_ID, TARGET_ID, FLAG)
+ INSERT INTO T_FRIEND (USER_ID, FRIEND_ID, FLAG)
  VALUES (@USER_ID, @FRIEND_ID, '1')";
 
             var parameters = new Params()
             {
-                new Param("@REQ_ID", request.MyId),
-                new Param("@TARGET_ID", request.FriendId),
+                new Param("@REQ_ID", request.MyInfo),
+                new Param("@TARGET_ID", request.FriendInfo),
             };
 
             var parameters2 = new Params()
             {
-                new Param("@USER_ID", request.MyId),
-                new Param("@FRIEND_ID", request.FriendId),
+                new Param("@USER_ID", request.MyInfo),
+                new Param("@FRIEND_ID", request.FriendInfo),
             };
 
             var parameters3 = new Params()
             {
-                new Param("@USER_ID", request.FriendId),
-                new Param("@FRIEND_ID", request.MyId),
+                new Param("@USER_ID", request.FriendInfo),
+                new Param("@FRIEND_ID", request.MyInfo),
             };
 
             try
@@ -194,15 +194,15 @@ VALUES (@REQ_ID, @TARGET_ID, @FLAG)
         {
             var sql = @"
  UPDATE T_FRIEND_REQUEST
-    SET FLAG = '3',
+    SET REQ_FLAG = '3',
         MOD_DT = datetime('now', 'localtime'),
   WHERE REQ_ID = @REQ_ID
     AND TARGET_ID = @TARGET_ID";
 
             var parameters = new Params()
             {
-                new Param("@REQ_ID", request.MyId),
-                new Param("@TARGET_ID", request.FriendId),
+                new Param("@REQ_ID", request.MyInfo),
+                new Param("@TARGET_ID", request.FriendInfo),
             };
 
             try
@@ -230,25 +230,25 @@ VALUES (@REQ_ID, @TARGET_ID, @FLAG)
     SET FLAG = '2',
         MOD_DT = datetime('now', 'localtime'),
   WHERE USER_ID = @USER_ID
-    AND TARGET_ID = @TARGET_ID";
+    AND FRIEND_ID = @FRIEND_ID";
 
             var parameters = new Params()
             {
-                new Param("@USER_ID", delFriend.MyId),
-                new Param("@TARGET_ID", delFriend.FriendId),
+                new Param("@USER_ID", delFriend.MyInfo.Id),
+                new Param("@FRIEND_ID", delFriend.FriendInfo.Id),
             };
 
             var parameters2 = new Params()
             {
-                new Param("@USER_ID", delFriend.FriendId),
-                new Param("@TARGET_ID", delFriend.MyId),
+                new Param("@USER_ID", delFriend.FriendInfo.Id),
+                new Param("@FRIEND_ID", delFriend.MyInfo.Id),
             };
 
             try
             {
                 Handler.BeginTransaction();
                 var ret = Handler.ExecuteNonQuery(sql, parameters);
-                ret += Handler.ExecuteNonQuery(sql, parameters);
+                ret += Handler.ExecuteNonQuery(sql, parameters2);
                 Handler.CommitTransaction();
                 return ret > 0;
             }
@@ -266,15 +266,15 @@ VALUES (@REQ_ID, @TARGET_ID, @FLAG)
         public List<FriendRequest> GetFriendRequests(UserInfo user)
         {
             var sql = @"
-SELECT  B.USER_ID, B.NICKNAME
-  FROM  T_FRIEND AS A
- WHERE  A.USER_ID = @USER_ID
- INNER JOIN USER_M AS B
-    ON  A.USER_ID = B.USER_ID";
+SELECT  USER_M.ID, USER_M.NICKNAME, T_FRIEND_REQUEST.REQ_FLAG
+  FROM  T_FRIEND_REQUEST 
+ INNER JOIN USER_M
+    ON  T_FRIEND_REQUEST.TARGET_ID = USER_M.ID
+WHERE  T_FRIEND_REQUEST.REQ_ID = @REQ_ID";
 
             var parameters = new Params()
             {
-                new Param("@USER_ID", user.Id),
+                new Param("@REQ_ID", user.Id),
             };
 
             var list = new List<FriendRequest>();
@@ -285,10 +285,13 @@ SELECT  B.USER_ID, B.NICKNAME
 
                 while (reader.Read())
                 {
+                    var friendInfo = new UserInfo((string)reader["ID"], "", (string)reader["NICKNAME"]);
+                    var flag = (FriendRequestFlag)Enum.Parse(typeof(FriendRequestFlag), (string)reader["REQ_FLAG"]);
                     list.Add(new FriendRequest(
-                        (string) reader["REQ_ID"],
-                        (string) reader["TARGET_ID"]
-                        ));
+                        user,
+                        friendInfo,
+                        flag
+                    ));
                 }
                 return list;
             }
@@ -304,7 +307,40 @@ SELECT  B.USER_ID, B.NICKNAME
 
         public List<Friend> GetFriends(UserInfo user)
         {
-            throw new NotImplementedException();
+            var sql = @"
+SELECT  USER_M.ID, USER_M.NICKNAME, T_FRIEND.FLAG
+  FROM  T_FRIEND 
+INNER JOIN USER_M 
+    ON  T_FRIEND.FRIEND_ID = USER_M.ID
+ WHERE  T_FRIEND.USER_ID = @USER_ID";
+
+            var parameters = new Params()
+            {
+                new Param("@USER_ID", user.Id),
+            };
+
+            var list = new List<Friend>();
+
+            try
+            {
+                var reader = Handler.ExecuteReader(sql, parameters);
+
+                while (reader.Read())
+                {
+                    var friend = new UserInfo((string)reader["ID"], "", (string)reader["NICKNAME"]);
+                    var flag = (FriendFlag)Enum.Parse(typeof(FriendFlag), (string)reader["FLAG"]);
+                    list.Add(new Friend(user, friend, flag));
+                }
+                return list;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                parameters.Dispose();
+            }
         }
     }
 }

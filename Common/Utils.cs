@@ -37,23 +37,33 @@ namespace Chungkang.GameNetwork.Common.Util
         }
     }
 
+    public enum FriendRequestFlag
+    {
+        Request,
+        Accept,
+        Refuse
+    }
+
     [Serializable]
     public class FriendRequest
     {
-        [JsonPropertyName("sourceId")]
-        public string MyId { get; set; }
-        [JsonPropertyName("targetId")]
-        public string FriendId { get; set; }
+        [JsonPropertyName("myInfo")]
+        public UserInfo MyInfo { get; set; }
+        [JsonPropertyName("friendInfo")]
+        public UserInfo FriendInfo { get; set; }
+        [JsonPropertyName("flag")]
+        public FriendRequestFlag Flag { get; set; }
 
-        public FriendRequest(string myId, string friendId)
+        public FriendRequest(UserInfo myInfo, UserInfo friendInfo, FriendRequestFlag flag = FriendRequestFlag.Request)
         {
-            MyId = myId;
-            FriendId = friendId;
+            MyInfo = myInfo;
+            FriendInfo = friendInfo;
+            Flag = flag;
         }
 
         public override string ToString()
         {
-            return $"myId: {MyId}, friendId: {FriendId}";
+            return $"myInfo: {MyInfo}, friendInfo: {FriendInfo}, flag: {Flag}";
         }
     }
 
@@ -66,23 +76,23 @@ namespace Chungkang.GameNetwork.Common.Util
     [Serializable]
     public class Friend
     {
-        [JsonPropertyName("myId")]
-        public string MyId { get; set; }
-        [JsonPropertyName("friendId")]
-        public string FriendId { get; set; }
-        [JsonPropertyName("Flag")]
+        [JsonPropertyName("myInfo")]
+        public UserInfo MyInfo { get; set; }
+        [JsonPropertyName ("userInfo")]
+        public UserInfo FriendInfo { get; set; }
+        [JsonPropertyName("flag")]
         public FriendFlag Flag { get; set; }
 
-        public Friend(string myId, string friendId, FriendFlag flag)
+        public Friend(UserInfo myInfo, UserInfo friendInfo, FriendFlag flag)
         {
-            MyId = myId;
-            FriendId = friendId;
+            MyInfo = myInfo;
+            FriendInfo = friendInfo;
             Flag = flag;
         }
 
         public override string ToString()
         {
-            return $"myId: {MyId}, friendId: {FriendId}, flag: {Flag}";
+            return $"myInfo: {MyInfo}, friendInfo: {FriendInfo}, flag: {Flag}";
         }
     }
 
@@ -94,7 +104,9 @@ namespace Chungkang.GameNetwork.Common.Util
         FriendRequest,
         AcceptFriendRequest,
         RefuseFriendRequest,
-        DeleteFriend
+        DeleteFriend,
+        FriendList,
+        FriendRequestList
     }
 
     [Serializable]

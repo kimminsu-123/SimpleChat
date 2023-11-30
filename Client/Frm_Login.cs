@@ -27,7 +27,7 @@ namespace Client
 
             Util.User = JsonSerializer.Deserialize<UserInfo>(serverMsg.Message);
 
-            Invoke((MethodInvoker)delegate
+            Invoke(() =>
             {
                 var mainForm = new Frm_Main();
                 mainForm.Show();

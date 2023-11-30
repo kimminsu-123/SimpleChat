@@ -1,8 +1,11 @@
-﻿using Chungkang.GameNetwork.Database.Handler;
+﻿using Chungkang.GameNetwork.Common.Util;
+using Chungkang.GameNetwork.Database.Handler;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -98,5 +101,12 @@ namespace Chungkang.GameNetwork.Utils
         {
             return list.GetEnumerator();
         }
+    }
+
+    public class ClientInfo
+    {
+        public UserInfo UserInfo { get; set; }
+        public Socket ClientSocket { get; set; }
+        public IPEndPoint Address { get; set; }
     }
 }

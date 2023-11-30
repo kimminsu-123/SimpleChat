@@ -9,6 +9,7 @@ namespace Chungkang.GameNetwork.Common.Message
 {
     public enum MessageFlag
     {
+        // Client
         Login = 0,
         Register,
         ValidateFriend,
@@ -16,7 +17,10 @@ namespace Chungkang.GameNetwork.Common.Message
         AcceptFriendRequest,
         RefuseFriendRequest,
         DeleteFriend,
+        FriendList,
+        FriendRequestList,
 
+        // Server
         Success = 200,
         Fail = -1
     }

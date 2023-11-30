@@ -12,7 +12,14 @@ namespace Chungkang.GameNetwork.Manager
         OnLogin,
         OnRegister,
         OnChatSend,
-        OnChatReceive
+        OnChatReceive,
+
+        OnInqFriendList,
+        OnInqFriendRequestList,
+        OnFriendRequest,
+        OnDeleteFriend,
+        OnAcceptFriendRequest,
+        OnRefuseFriendRequest,
     }
 
     public class EventManager

@@ -2,6 +2,7 @@
 using Chungkang.GameNetwork.Common.Util;
 using Chungkang.GameNetwork.Network.Sender;
 using Chungkang.GameNetwork.Service;
+using Microsoft.VisualBasic;
 using System.Data;
 using System.Text.Json;
 
@@ -66,6 +67,14 @@ namespace Chungkang.GameNetwork.Network.Handler
                     case MessageFlag.DeleteFriend:
                         var friend = JsonSerializer.Deserialize<Friend>(msg.JsonMessage);
                         serverMsg.ReturnFlag = HandleDeleteFriend(friend, out detailMsg, out retValue);
+                        break;
+                    case MessageFlag.FriendList:
+                        user = JsonSerializer.Deserialize<UserInfo>(msg.JsonMessage);
+                        serverMsg.ReturnFlag = HandleFriendList(user, out detailMsg, out retValue);
+                        break;
+                    case MessageFlag.FriendRequestList:
+                        user = JsonSerializer.Deserialize<UserInfo>(msg.JsonMessage);
+                        serverMsg.ReturnFlag = HandleFriendRequestList(user, out detailMsg, out retValue);
                         break;
                     default:
                         detailMsg = string.Empty;
@@ -242,6 +251,42 @@ namespace Chungkang.GameNetwork.Network.Handler
             }
 
             return ServerMessageFlag.DeleteFriend;
+        }
+
+        private ServerMessageFlag HandleFriendList(UserInfo? user, out string msg, out bool retValue)
+        {
+            retValue = true;
+
+            try
+            {
+                msg = JsonSerializer.Serialize(_userService.GetFriends(user));
+            }
+            catch (Exception err)
+            {
+                msg = err.Message;
+                retValue = false;
+                throw;
+            }
+
+            return ServerMessageFlag.FriendList;
+        }
+
+        private ServerMessageFlag HandleFriendRequestList(UserInfo? user, out string msg, out bool retValue)
+        {
+            retValue = true;
+
+            try
+            {
+                msg = JsonSerializer.Serialize(_userService.GetFriendRequests(user));
+            }
+            catch (Exception err)
+            {
+                msg = err.Message;
+                retValue = false;
+                throw;
+            }
+
+            return ServerMessageFlag.FriendRequestList;
         }
     }
 }
