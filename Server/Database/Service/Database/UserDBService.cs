@@ -113,9 +113,9 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
 
             var parameters = new Params()
             {
-                new Param("@REQ_ID", request.MyInfo),
-                new Param("@TARGET_ID", request.FriendInfo),
-                new Param("@REQ_FLAG", "1"),
+                new Param("@REQ_ID", request.MyInfo.Id),
+                new Param("@TARGET_ID", request.FriendInfo.Id),
+                new Param("@REQ_FLAG", "0"),
             };
 
             try
@@ -140,8 +140,8 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
         {
             var sql = @"
  UPDATE T_FRIEND_REQUEST
-    SET REQ_FLAG = '2',
-        MOD_DT = datetime('now', 'localtime'),
+    SET REQ_FLAG = '1',
+        MOD_DT = datetime('now', 'localtime')
   WHERE REQ_ID = @REQ_ID
     AND TARGET_ID = @TARGET_ID";
 
@@ -151,20 +151,20 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
 
             var parameters = new Params()
             {
-                new Param("@REQ_ID", request.MyInfo),
-                new Param("@TARGET_ID", request.FriendInfo),
+                new Param("@REQ_ID", request.FriendInfo.Id),
+                new Param("@TARGET_ID", request.MyInfo.Id),
             };
 
             var parameters2 = new Params()
             {
-                new Param("@USER_ID", request.MyInfo),
-                new Param("@FRIEND_ID", request.FriendInfo),
+                new Param("@USER_ID", request.MyInfo.Id),
+                new Param("@FRIEND_ID", request.FriendInfo.Id),
             };
 
             var parameters3 = new Params()
             {
-                new Param("@USER_ID", request.FriendInfo),
-                new Param("@FRIEND_ID", request.MyInfo),
+                new Param("@USER_ID", request.FriendInfo.Id),
+                new Param("@FRIEND_ID", request.MyInfo.Id),
             };
 
             try
@@ -194,15 +194,15 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
         {
             var sql = @"
  UPDATE T_FRIEND_REQUEST
-    SET REQ_FLAG = '3',
-        MOD_DT = datetime('now', 'localtime'),
+    SET REQ_FLAG = '2',
+        MOD_DT = datetime('now', 'localtime')
   WHERE REQ_ID = @REQ_ID
     AND TARGET_ID = @TARGET_ID";
 
             var parameters = new Params()
             {
-                new Param("@REQ_ID", request.MyInfo),
-                new Param("@TARGET_ID", request.FriendInfo),
+                new Param("@REQ_ID", request.MyInfo.Id),
+                new Param("@TARGET_ID", request.FriendInfo.Id),
             };
 
             try
@@ -226,9 +226,7 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
         public bool DeleteFriend(Friend delFriend)
         {
             var sql = @"
- UPDATE T_FRIEND
-    SET FLAG = '2',
-        MOD_DT = datetime('now', 'localtime'),
+ DELETE FROM T_FRIEND
   WHERE USER_ID = @USER_ID
     AND FRIEND_ID = @FRIEND_ID";
 
@@ -269,8 +267,8 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
 SELECT  USER_M.ID, USER_M.NICKNAME, T_FRIEND_REQUEST.REQ_FLAG
   FROM  T_FRIEND_REQUEST 
  INNER JOIN USER_M
-    ON  T_FRIEND_REQUEST.TARGET_ID = USER_M.ID
-WHERE  T_FRIEND_REQUEST.REQ_ID = @REQ_ID";
+    ON  T_FRIEND_REQUEST.REQ_ID = USER_M.ID
+WHERE  T_FRIEND_REQUEST.TARGET_ID = @REQ_ID";
 
             var parameters = new Params()
             {

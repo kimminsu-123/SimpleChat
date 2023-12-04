@@ -9,12 +9,18 @@ namespace Client
 {
     public partial class Frm_FriendList : Form
     {
-        private ListViewItem _selectedFriend;
-        private ListViewItem _selectedFriendRequest;
+        private Friend? _selectedFriend;
+        private FriendRequest? _selectedFriendRequest;
+
+        private List<Friend> _friends;
+        private List<FriendRequest> _friendRequests;
 
         public Frm_FriendList()
         {
             InitializeComponent();
+
+            _friends = new List<Friend>();
+            _friendRequests = new List<FriendRequest>();
         }
 
         private void btnReqFriend_Click(object sender, EventArgs e)
@@ -26,7 +32,14 @@ namespace Client
                 return;
             }
 
+            var request = new FriendRequest(Util.User, new UserInfo(id, "", ""));
+            var reqFriendMessage = new WrapperMessage
+            {
+                Flag = MessageFlag.FriendRequest,
+                JsonMessage = JsonSerializer.Serialize(request)
+            };
 
+            NetworkManager.Instance.UserManageServer.Send(reqFriendMessage);
         }
 
         private void btnDelFriend_Click(object sender, EventArgs e)
@@ -43,7 +56,16 @@ namespace Client
                 return;
             }
 
-            _selectedFriend = listFriendList.SelectedItems[0];
+            var id = listFriendList.SelectedItems[0].SubItems[1].Text.Trim();
+            _selectedFriend = _friends.Find(f => f.FriendInfo.Id.Equals(id));
+
+            var reqDelFriendMessage = new WrapperMessage
+            {
+                Flag = MessageFlag.DeleteFriend,
+                JsonMessage = JsonSerializer.Serialize(_selectedFriend)
+            };
+
+            NetworkManager.Instance.UserManageServer.Send(reqDelFriendMessage);
         }
 
         private void btnAcceptFriend_Click(object sender, EventArgs e)
@@ -60,7 +82,22 @@ namespace Client
                 return;
             }
 
-            _selectedFriendRequest = listReqList.SelectedItems[0];
+            var id = listReqList.SelectedItems[0].SubItems[1].Text.Trim();
+            _selectedFriendRequest = _friendRequests.Find(f => f.FriendInfo.Id.Equals(id));
+
+            if (_selectedFriendRequest?.Flag != FriendRequestFlag.Request)
+            {
+                MessageBox.Show("이미 처리된 요청입니다.", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var reqAcceptFriendMessage = new WrapperMessage
+            {
+                Flag = MessageFlag.AcceptFriendRequest,
+                JsonMessage = JsonSerializer.Serialize(_selectedFriendRequest)
+            };
+
+            NetworkManager.Instance.UserManageServer.Send(reqAcceptFriendMessage);
         }
 
         private void btnRefuseFriend_Click(object sender, EventArgs e)
@@ -77,7 +114,22 @@ namespace Client
                 return;
             }
 
-            _selectedFriendRequest = listReqList.SelectedItems[0];
+            var id = listReqList.SelectedItems[0].SubItems[1].Text.Trim();
+            _selectedFriendRequest = _friendRequests.Find(f => f.FriendInfo.Id.Equals(id));
+
+            if (_selectedFriendRequest?.Flag != FriendRequestFlag.Request)
+            {
+                MessageBox.Show("이미 처리된 요청입니다.", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var reqRefuseFriendMessage = new WrapperMessage
+            {
+                Flag = MessageFlag.RefuseFriendRequest,
+                JsonMessage = JsonSerializer.Serialize(_selectedFriendRequest)
+            };
+
+            NetworkManager.Instance.UserManageServer.Send(reqRefuseFriendMessage);
         }
 
         private void Frm_FriendList_Load(object sender, EventArgs e)
@@ -149,26 +201,51 @@ namespace Client
 
         private void HandleRefuseFriendRequest(ServerMessage serverMsg)
         {
-            _selectedFriendRequest.SubItems[3].Text = FriendRequestFlag.Refuse.ToString();
+            _friendRequests.Find(x => x.FriendInfo.Id.Equals(_selectedFriendRequest.FriendInfo.Id)).Flag = FriendRequestFlag.Refuse;
+            UpdateFriendRequestList();
         }
 
         private void HandleAcceptFriendRequest(ServerMessage serverMsg)
         {
-            _selectedFriendRequest.SubItems[3].Text = FriendRequestFlag.Accept.ToString();
+            _friendRequests.Find(x => x.FriendInfo.Id.Equals(_selectedFriendRequest.FriendInfo.Id)).Flag = FriendRequestFlag.Accept;
+            UpdateFriendRequestList();
         }
 
         private void HandleDeleteFriend(ServerMessage serverMsg)
         {
-            listReqList.Items.Remove(_selectedFriend);
+            _friends.Remove(_selectedFriend);
+            UpdateFriendList();
+        }
+
+        private void UpdateFriendList()
+        {
+            listFriendList.Items.Clear();
+            int i = 1;
+
+            foreach (var friend in _friends)
+            {
+                if (friend.Flag == FriendFlag.Deleted) continue;
+
+                var item = new ListViewItem(new string[] { $"{i ++}", $"{friend.FriendInfo.Id}", $"{friend.FriendInfo.NickName}" });
+                listFriendList.Items.Add(item);
+            }
+        }
+
+        private void UpdateFriendRequestList()
+        {
+            listReqList.Items.Clear();
+            int i = 1;
+
+            foreach (var request in _friendRequests)
+            {
+                var item = new ListViewItem(new string[] { $"{i}", $"{request.FriendInfo.Id}", $"{request.FriendInfo.NickName}", $"{request.Flag}" });
+                listReqList.Items.Add(item);
+            }
         }
 
         private void HandleFriendRequest(ServerMessage serverMsg)
         {
-            var request = JsonSerializer.Deserialize<FriendRequest>(serverMsg.Message);
-            if (request == null) return;
-
-            var item = new ListViewItem(new string[] { $"{listReqList.Items.Count + 1}", $"{request.FriendInfo.Id}", $"{request.FriendInfo.NickName}", $"{request.Flag}" });
-            listReqList.Items.Add(item);
+            MessageBox.Show(serverMsg.Message, "성공", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void HandleInqFriendRequestList(ServerMessage serverMsg)
@@ -176,13 +253,13 @@ namespace Client
             var list = JsonSerializer.Deserialize<List<FriendRequest>>(serverMsg.Message);
             if (list == null || list.Count <= 0) return;
 
-            listReqList.Items.Clear();
             for (int i = 0; i < list.Count; i++)
             {
                 var request = list[i];
-                var item = new ListViewItem(new string[] { $"{i + 1}", $"{request.FriendInfo.Id}", $"{request.FriendInfo.NickName}", $"{request.Flag}" });
-                listReqList.Items.Add(item);
+                
+                _friendRequests.Add(request);
             }
+            UpdateFriendRequestList();
         }
 
         private void HandleInqFriendList(ServerMessage serverMsg)
@@ -190,13 +267,12 @@ namespace Client
             var list = JsonSerializer.Deserialize<List<Friend>>(serverMsg.Message);
             if (list == null || list.Count <= 0) return;
 
-            listFriendList.Items.Clear();
             for (int i = 0; i < list.Count; i++)
             {
                 var friend = list[i];
-                var item = new ListViewItem(new string[] { $"{i + 1}", $"{friend.FriendInfo.Id}", $"{friend.FriendInfo.NickName}" });
-                listFriendList.Items.Add(item);
+                _friends.Add(friend);
             }
+            UpdateFriendList();
         }
 
         private void Frm_FriendList_FormClosing(object sender, FormClosingEventArgs e)

@@ -28,21 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            txtLastChat = new TextBox();
             lblRoomName = new Label();
+            btnLeave = new Button();
             SuspendLayout();
-            // 
-            // txtLastChat
-            // 
-            txtLastChat.BackColor = Color.FromArgb(224, 224, 224);
-            txtLastChat.BorderStyle = BorderStyle.None;
-            txtLastChat.Enabled = false;
-            txtLastChat.Font = new Font("맑은 고딕", 15F, FontStyle.Regular, GraphicsUnit.Point);
-            txtLastChat.Location = new Point(3, 47);
-            txtLastChat.Name = "txtLastChat";
-            txtLastChat.ReadOnly = true;
-            txtLastChat.Size = new Size(294, 27);
-            txtLastChat.TabIndex = 0;
             // 
             // lblRoomName
             // 
@@ -53,23 +41,33 @@
             lblRoomName.TabIndex = 1;
             lblRoomName.Text = "채팅방이름";
             // 
+            // btnLeave
+            // 
+            btnLeave.Location = new Point(236, 11);
+            btnLeave.Name = "btnLeave";
+            btnLeave.Size = new Size(61, 24);
+            btnLeave.TabIndex = 2;
+            btnLeave.Text = "나가기";
+            btnLeave.UseVisualStyleBackColor = true;
+            btnLeave.Click += btnLeave_Click;
+            // 
             // ChatRoom
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Silver;
+            Controls.Add(btnLeave);
             Controls.Add(lblRoomName);
-            Controls.Add(txtLastChat);
             Name = "ChatRoom";
-            Size = new Size(300, 77);
+            Size = new Size(300, 51);
+            Load += ChatRoom_Load;
             DoubleClick += OnDoubleClick;
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private TextBox txtLastChat;
         private Label lblRoomName;
+        private Button btnLeave;
     }
 }

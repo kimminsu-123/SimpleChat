@@ -1,8 +1,5 @@
 ﻿using Chungkang.GameNetwork.Common.Message;
-using Chungkang.GameNetwork.Common.Util;
 using Chungkang.GameNetwork.Network.Handler;
-using Chungkang.GameNetwork.Network.Sender;
-using Chungkang.GameNetwork.Utils;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -20,6 +17,7 @@ namespace Chungkang.GameNetwork.Network.Server
         protected Dictionary<IPEndPoint, Socket> _clientSockets;
         protected object _lockClients;
 
+        public Dictionary<IPEndPoint, Socket> ClientSockets => _clientSockets;
         public bool IsRun { get; private set; }
 
         public TCPServer(int port)
@@ -163,7 +161,7 @@ namespace Chungkang.GameNetwork.Network.Server
             Console.WriteLine($"[{GetType().Name}] : 서버가 정상 동작합니다.");
         }
 
-        public void SendTo(IPEndPoint address, WrapperMessage msg)
+        public virtual void SendTo(IPEndPoint address, WrapperMessage msg)
         {
             Socket clientSocket;
 

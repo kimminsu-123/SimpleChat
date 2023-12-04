@@ -3,7 +3,6 @@ using Chungkang.GameNetwork.Database.Handler;
 using Chungkang.GameNetwork.Utils;
 using Chungkang.GameNetwork.Common.Util;
 using Chungkang.GameNetwork.Network.Server;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Chungkang.GameNetwork.Server
 {
@@ -33,6 +32,7 @@ namespace Chungkang.GameNetwork.Server
             try
             {
                 servers.Add(new UserManagementTCPServer(ServerInfo.userManagePort));
+                servers.Add(new ChattingTCPServer(ServerInfo.chatPort));
 
                 foreach (var s in servers)
                 {
@@ -65,7 +65,7 @@ namespace Chungkang.GameNetwork.Server
 
         private static void CreateTables()
         {
-            var sql = new string[3];
+            var sql = new string[6];
 
             sql[0] = @"
 CREATE TABLE IF NOT EXISTS USER_M 
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS T_FRIEND_REQUEST
 (
 REQ_ID TEXT NOT NULL, 
 TARGET_ID TEXT NOT NULL,
-REQ_FLAG TEXT DEFAULT '1',
+REQ_FLAG TEXT DEFAULT '0',
 INS_DT TEXT DEFAULT (datetime('now', 'localtime')), 
 INT_US TEXT DEFAULT 'system', 
 MOD_DT TEXT DEFAULT (datetime('now', 'localtime')), 
@@ -105,6 +105,48 @@ MOD_DT TEXT DEFAULT (datetime('now', 'localtime')),
 MOD_US TEXT DEFAULT 'system',
 PRIMARY KEY (USER_ID, FRIEND_ID, FLAG)
 ) ";
+
+            sql[3] = @"
+CREATE TABLE IF NOT EXISTS T_CHATROOM 
+(
+ID          TEXT NOT NULL DEFAULT '', 
+NAME        TEXT NOT NULL DEFAULT '',
+CREATER     TEXT NOT NULL DEFAULT '',
+INS_DT      TEXT DEFAULT (datetime('now', 'localtime')), 
+INT_US      TEXT DEFAULT 'system', 
+MOD_DT      TEXT DEFAULT (datetime('now', 'localtime')), 
+MOD_US      TEXT DEFAULT 'system',
+PRIMARY KEY (ID)
+) ";
+
+            sql[4] = @"
+CREATE TABLE IF NOT EXISTS T_CHATROOM_USERS 
+(
+CHATROOM_ID TEXT NOT NULL DEFAULT '', 
+USER_ID     TEXT NOT NULL DEFAULT '',
+FLAG        TEXT NOT NULL DEFAULT '0',
+INS_DT      TEXT DEFAULT (datetime('now', 'localtime')), 
+INT_US      TEXT DEFAULT 'system', 
+MOD_DT      TEXT DEFAULT (datetime('now', 'localtime')), 
+MOD_US      TEXT DEFAULT 'system',
+PRIMARY KEY (CHATROOM_ID, USER_ID)
+) ";
+
+            sql[5] = @"
+CREATE TABLE IF NOT EXISTS T_CHAT 
+(
+CHATROOM_ID TEXT NOT NULL DEFAULT '', 
+SEQ         INTEGER PRIMARY KEY AUTOINCREMENT,
+SENDER      TEXT NOT NULL DEFAULT '',
+SEND_DTTM   TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+MESSAGE     TEXT NOT NULL DEFAULT '',
+INS_DT      TEXT DEFAULT (datetime('now', 'localtime')), 
+INT_US      TEXT DEFAULT 'system', 
+MOD_DT      TEXT DEFAULT (datetime('now', 'localtime')), 
+MOD_US      TEXT DEFAULT 'system',
+UNIQUE (CHATROOM_ID, SEQ) 
+)  ";
+
             try
             {
                 DBUtils.Handler?.BeginTransaction();

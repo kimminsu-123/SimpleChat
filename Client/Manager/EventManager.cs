@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices.ObjectiveC;
 using System.Text;
 using System.Threading.Tasks;
+using static Chungkang.GameNetwork.Manager.EventManager;
 
 namespace Chungkang.GameNetwork.Manager
 {
@@ -20,6 +21,11 @@ namespace Chungkang.GameNetwork.Manager
         OnDeleteFriend,
         OnAcceptFriendRequest,
         OnRefuseFriendRequest,
+
+        OnInqChatRooms,
+        OnCreateChatRoom,
+        OnLeaveChatRoom,
+        OnReceiveChat
     }
 
     public class EventManager
@@ -62,7 +68,9 @@ namespace Chungkang.GameNetwork.Manager
 
         public void PostNotification(EventType type, object sender, params object[] args)
         {
-            foreach(var listener in _listeners[type])
+            if (!_listeners.ContainsKey(type)) return;
+
+            foreach (var listener in _listeners[type])
             {
                 listener.Invoke(type, sender, args);
             }

@@ -22,14 +22,17 @@ namespace Chungkang.GameNetwork.Network.Manager
         }
 
         public UserManagementTCPClient UserManageServer { get; private set; }
+        public ChattingTCPClient ChatServer { get; private set; }
 
         public void Initialize()
         {
             try
             {
                 UserManageServer = new UserManagementTCPClient(ServerInfo.serverIp, ServerInfo.userManagePort);
+                ChatServer = new ChattingTCPClient(ServerInfo.serverIp, ServerInfo.chatPort);
 
                 UserManageServer.Initialize();
+                ChatServer.Initialize();
             }
             catch (Exception)
             {
@@ -42,6 +45,7 @@ namespace Chungkang.GameNetwork.Network.Manager
             try
             {
                 UserManageServer.Connect();
+                ChatServer.Connect();
             }
             catch (Exception)
             {
@@ -52,6 +56,7 @@ namespace Chungkang.GameNetwork.Network.Manager
         public void Release()
         {
             UserManageServer.Dispose();
+            ChatServer.Dispose();
         }
     }
 }

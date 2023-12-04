@@ -9,7 +9,7 @@ namespace Chungkang.GameNetwork.Common.Message
 {
     public enum MessageFlag
     {
-        // Client
+        // User Management
         Login = 0,
         Register,
         ValidateFriend,
@@ -19,6 +19,12 @@ namespace Chungkang.GameNetwork.Common.Message
         DeleteFriend,
         FriendList,
         FriendRequestList,
+
+        // Chat
+        InqChatRooms,
+        CreateChatRoom,
+        LeaveChatRoom,
+        SendChat,
 
         // Server
         Success = 200,

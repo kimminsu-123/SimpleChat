@@ -106,7 +106,12 @@ namespace Chungkang.GameNetwork.Common.Util
         RefuseFriendRequest,
         DeleteFriend,
         FriendList,
-        FriendRequestList
+        FriendRequestList,
+
+        InqChatRooms,
+        CreateChatRoom,
+        LeaveChatRoom,
+        SendChat
     }
 
     [Serializable]
@@ -118,5 +123,51 @@ namespace Chungkang.GameNetwork.Common.Util
         public bool ReturnValue { get; set; }
         [JsonPropertyName("retMessage")]
         public string Message { get; set; }
+    }
+
+    [Serializable]
+    public class ChatRoomInfo
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        [JsonPropertyName("creater")]
+        public string Creater { get; set; }
+        [JsonPropertyName("users")]
+        public List<ChatRoomUser> Users { get; set; }
+
+        public ChatRoomInfo()
+        {
+            Users = new List<ChatRoomUser>();
+        }
+    }
+
+    [Serializable]
+    public class Chat
+    {
+        [JsonPropertyName("chatroom")]
+        public ChatRoomInfo ChatRoom { get; set; }
+        [JsonPropertyName("sender")]
+        public UserInfo Sender { get; set; }
+        [JsonPropertyName("sendDttm")]
+        public DateTime SendDttm { get; set; }
+        [JsonPropertyName("message")]
+        public string Message { get; set; }
+    }
+
+    public enum ChatRoomUserFlag
+    {
+        Normal = 1,
+        Deleted
+    }
+
+    [Serializable] 
+    public class ChatRoomUser
+    {
+        [JsonPropertyName("user")]
+        public UserInfo User { get; set; }
+        [JsonPropertyName("flag")]
+        public ChatRoomUserFlag Flag { get; set; }
     }
 }

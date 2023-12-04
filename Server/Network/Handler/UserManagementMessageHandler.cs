@@ -27,7 +27,6 @@ namespace Chungkang.GameNetwork.Network.Handler
 
             if (string.IsNullOrEmpty(msg.JsonMessage.Trim())) return;
 
-            var ret = false;
             var sendMsg = new WrapperMessage()
             {
                 FromIP = msg.FromIP,
@@ -92,7 +91,7 @@ namespace Chungkang.GameNetwork.Network.Handler
             serverMsg.Message = detailMsg;
             serverMsg.ReturnValue = retValue;
 
-            sendMsg.Flag = ret ? MessageFlag.Success : MessageFlag.Fail;
+            sendMsg.Flag = retValue ? MessageFlag.Success : MessageFlag.Fail;
             sendMsg.JsonMessage = JsonSerializer.Serialize(serverMsg);
             _sender.EnqueueMessage(sendMsg);
         }

@@ -35,8 +35,20 @@ namespace Chungkang.GameNetwork.Network.Handler
                 case ServerMessageFlag.FriendList:
                     type = EventType.OnInqFriendList;
                     break;
+                case ServerMessageFlag.FriendRequest:
+                    type = EventType.OnFriendRequest;
+                    break;
                 case ServerMessageFlag.FriendRequestList:
                     type = EventType.OnInqFriendRequestList;
+                    break;
+                case ServerMessageFlag.AcceptFriendRequest:
+                    type = EventType.OnAcceptFriendRequest;
+                    break;
+                case ServerMessageFlag.RefuseFriendRequest:
+                    type = EventType.OnRefuseFriendRequest;
+                    break;
+                case ServerMessageFlag.DeleteFriend:
+                    type = EventType.OnDeleteFriend;
                     break;
             }
 
