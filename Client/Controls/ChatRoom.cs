@@ -34,7 +34,8 @@ namespace Client
 
         private void OnDoubleClick(object sender, EventArgs e)
         {
-
+            var frmChatRoom = new Frm_ChatRoom(_chatRoomInfo);
+            frmChatRoom.ShowDialog();
         }
 
         private void btnLeave_Click(object sender, EventArgs e)

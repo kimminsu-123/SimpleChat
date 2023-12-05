@@ -2,8 +2,6 @@
 using Chungkang.GameNetwork.Common.Util;
 using Chungkang.GameNetwork.Network.Sender;
 using Chungkang.GameNetwork.Service;
-using Microsoft.VisualBasic;
-using System.Data;
 using System.Text.Json;
 
 namespace Chungkang.GameNetwork.Network.Handler
@@ -175,13 +173,11 @@ namespace Chungkang.GameNetwork.Network.Handler
         }
         private ServerMessageFlag HandleFriendRequest(FriendRequest? req, out string msg, out bool retValue)
         {
-            msg = "친구 요청에 성공하였습니다.";
-            
             try
             {
-                retValue = _userService.FriendRequest(req);
-                if (!retValue)
-                    msg = "친구 요청에 실패하였습니다";
+                _userService.FriendRequest(req);
+                msg = JsonSerializer.Serialize(req);
+                retValue = true;
             }
             catch (Exception err)
             {
@@ -194,13 +190,11 @@ namespace Chungkang.GameNetwork.Network.Handler
         }
         private ServerMessageFlag HandleAcceptFriendRequest(FriendRequest? req, out string msg, out bool retValue)
         {
-            msg = "요청을 수락하였습니다.";
-
             try
             {
-                retValue = _userService.AcceptFriendRequest(req);
-                if (!retValue)
-                    msg = "요청 수락에 실패했습니다.";
+                _userService.AcceptFriendRequest(req);
+                msg = JsonSerializer.Serialize(req);
+                retValue = true;
             }
             catch (Exception err)
             {
@@ -214,13 +208,11 @@ namespace Chungkang.GameNetwork.Network.Handler
 
         private ServerMessageFlag HandleRefuseFriendRequest(FriendRequest? req, out string msg, out bool retValue)
         {
-            msg = "요청을 거절하였습니다.";
-
             try
             {
-                retValue = _userService.RefuseFriendRequest(req);
-                if (!retValue)
-                    msg = "요청 거절에 실패했습니다.";
+                _userService.RefuseFriendRequest(req);
+                msg = JsonSerializer.Serialize(req);
+                retValue = true;
             }
             catch (Exception err)
             {
@@ -234,13 +226,11 @@ namespace Chungkang.GameNetwork.Network.Handler
 
         private ServerMessageFlag HandleDeleteFriend(Friend? friend, out string msg, out bool retValue)
         {
-            msg = "친구 삭제에 성공하였습니다.";
-
             try
             {
-                retValue = _userService.DeleteFriend(friend);
-                if (!retValue)
-                    msg = "친구 삭제에 실패했습니다.";
+                _userService.DeleteFriend(friend);
+                msg = JsonSerializer.Serialize(friend);
+                retValue = true;
             }
             catch (Exception err)
             {
@@ -254,11 +244,10 @@ namespace Chungkang.GameNetwork.Network.Handler
 
         private ServerMessageFlag HandleFriendList(UserInfo? user, out string msg, out bool retValue)
         {
-            retValue = true;
-
             try
             {
                 msg = JsonSerializer.Serialize(_userService.GetFriends(user));
+                retValue = true;
             }
             catch (Exception err)
             {

@@ -104,7 +104,7 @@ VALUES (@ID, @PW, @NICKNAME)
             }
         }
 
-        public bool FriendRequest(FriendRequest request)
+        public void FriendRequest(FriendRequest request)
         {
             var sql = @"
 INSERT INTO T_FRIEND_REQUEST (REQ_ID, TARGET_ID, REQ_FLAG)
@@ -121,9 +121,8 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
             try
             {
                 Handler.BeginTransaction();
-                var ret = Handler.ExecuteNonQuery(sql, parameters) > 0 ? true : false;
+                Handler.ExecuteNonQuery(sql, parameters);
                 Handler.CommitTransaction();
-                return ret;
             }
             catch (Exception)
             {
@@ -136,7 +135,7 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
             }
         }
 
-        public bool AcceptFriendRequest(FriendRequest request)
+        public void AcceptFriendRequest(FriendRequest request)
         {
             var sql = @"
  UPDATE T_FRIEND_REQUEST
@@ -170,12 +169,10 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
             try
             {
                 Handler.BeginTransaction();
-                var ret = Handler.ExecuteNonQuery(sql, parameters);
-                ret += Handler.ExecuteNonQuery(insertSql, parameters2);
-                ret += Handler.ExecuteNonQuery(insertSql, parameters3);
+                Handler.ExecuteNonQuery(sql, parameters);
+                Handler.ExecuteNonQuery(insertSql, parameters2);
+                Handler.ExecuteNonQuery(insertSql, parameters3);
                 Handler.CommitTransaction();
-
-                return ret > 0;
             }
             catch (Exception)
             {
@@ -190,7 +187,7 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
             }
         }
 
-        public bool RefuseFriendRequest(FriendRequest request)
+        public void RefuseFriendRequest(FriendRequest request)
         {
             var sql = @"
  UPDATE T_FRIEND_REQUEST
@@ -208,9 +205,8 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
             try
             {
                 Handler.BeginTransaction();
-                var ret = Handler.ExecuteNonQuery(sql, parameters) > 0 ? true : false;
+                Handler.ExecuteNonQuery(sql, parameters);
                 Handler.CommitTransaction();
-                return ret;
             }
             catch (Exception)
             {
@@ -223,7 +219,7 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
             }
         }
 
-        public bool DeleteFriend(Friend delFriend)
+        public void DeleteFriend(Friend delFriend)
         {
             var sql = @"
  DELETE FROM T_FRIEND
@@ -245,10 +241,9 @@ VALUES (@REQ_ID, @TARGET_ID, @REQ_FLAG)
             try
             {
                 Handler.BeginTransaction();
-                var ret = Handler.ExecuteNonQuery(sql, parameters);
-                ret += Handler.ExecuteNonQuery(sql, parameters2);
+                Handler.ExecuteNonQuery(sql, parameters);
+                Handler.ExecuteNonQuery(sql, parameters2);
                 Handler.CommitTransaction();
-                return ret > 0;
             }
             catch (Exception)
             {

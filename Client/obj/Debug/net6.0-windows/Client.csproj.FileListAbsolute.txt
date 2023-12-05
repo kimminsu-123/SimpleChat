@@ -37,3 +37,4 @@ D:\5.청강대\1-2\과제\게임 네트워크\기말평가 과제\SimpleChat\Cli
 D:\5.청강대\1-2\과제\게임 네트워크\기말평가 과제\SimpleChat\Client\obj\Debug\net6.0-windows\Client.ChatRoom.resources
 D:\5.청강대\1-2\과제\게임 네트워크\기말평가 과제\SimpleChat\Client\obj\Debug\net6.0-windows\Client.Frm_Main.resources
 D:\5.청강대\1-2\과제\게임 네트워크\기말평가 과제\SimpleChat\Client\obj\Debug\net6.0-windows\Client.Frm_FriendList.resources
+D:\5.청강대\1-2\과제\게임 네트워크\기말평가 과제\SimpleChat\Client\obj\Debug\net6.0-windows\Client.Frm_ChatRoom.resources

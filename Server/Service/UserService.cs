@@ -70,13 +70,13 @@ namespace Chungkang.GameNetwork.Service
             }
         }
 
-        public bool FriendRequest(FriendRequest? request)
+        public void FriendRequest(FriendRequest? request)
         {
             if (request == null) throw new ArgumentException("friend request: request is null");
 
             try
             {
-                return _service.FriendRequest(request);
+                _service.FriendRequest(request);
             }
             catch (Exception)
             {
@@ -84,13 +84,13 @@ namespace Chungkang.GameNetwork.Service
             }
         }
 
-        public bool AcceptFriendRequest(FriendRequest? request)
+        public void AcceptFriendRequest(FriendRequest? request)
         {
             if (request == null) throw new ArgumentException("accept friend request: request is null");
 
             try
             {
-                return _service.AcceptFriendRequest(request);
+                _service.AcceptFriendRequest(request);
             }
             catch (Exception)
             {
@@ -98,13 +98,13 @@ namespace Chungkang.GameNetwork.Service
             }
         }
 
-        public bool RefuseFriendRequest(FriendRequest? request)
+        public void RefuseFriendRequest(FriendRequest? request)
         {
             if (request == null) throw new ArgumentException("refuse friend request: request is null");
 
             try
             {
-                return _service.RefuseFriendRequest(request);
+                _service.RefuseFriendRequest(request);
             }
             catch (Exception)
             {
@@ -112,13 +112,13 @@ namespace Chungkang.GameNetwork.Service
             }
         }
 
-        public bool DeleteFriend(Friend? friend)
+        public void DeleteFriend(Friend? friend)
         {
             if (friend == null) throw new ArgumentException("delete friend: friend is null");
 
             try
             {
-                return _service.DeleteFriend(friend);
+                _service.DeleteFriend(friend);
             }
             catch (Exception)
             {

@@ -201,14 +201,23 @@ namespace Client
 
         private void HandleRefuseFriendRequest(ServerMessage serverMsg)
         {
-            _friendRequests.Find(x => x.FriendInfo.Id.Equals(_selectedFriendRequest.FriendInfo.Id)).Flag = FriendRequestFlag.Refuse;
+            var req = JsonSerializer.Deserialize<FriendRequest>(serverMsg.Message);
+            if(req == null) return;
+
+            _friendRequests.Find(x => x.FriendInfo.Id.Equals(req.FriendInfo.Id)).Flag = FriendRequestFlag.Refuse;
             UpdateFriendRequestList();
         }
 
         private void HandleAcceptFriendRequest(ServerMessage serverMsg)
         {
-            _friendRequests.Find(x => x.FriendInfo.Id.Equals(_selectedFriendRequest.FriendInfo.Id)).Flag = FriendRequestFlag.Accept;
+            var req = JsonSerializer.Deserialize<FriendRequest>(serverMsg.Message);
+            if (req == null) return;
+
+            _friendRequests.Find(x => x.FriendInfo.Id.Equals(req.FriendInfo.Id)).Flag = FriendRequestFlag.Accept;
             UpdateFriendRequestList();
+
+            _friends.Add(new Friend(req.MyInfo, req.FriendInfo, FriendFlag.Nomal));
+            UpdateFriendList();
         }
 
         private void HandleDeleteFriend(ServerMessage serverMsg)
@@ -245,7 +254,7 @@ namespace Client
 
         private void HandleFriendRequest(ServerMessage serverMsg)
         {
-            MessageBox.Show(serverMsg.Message, "성공", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("친구 요청에 성공하였습니다.", "성공", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void HandleInqFriendRequestList(ServerMessage serverMsg)

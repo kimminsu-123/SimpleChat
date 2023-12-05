@@ -4,6 +4,9 @@
     <Compile Update="Controls\ChatRoom.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Frm_ChatRoom.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Frm_FriendList.cs">
       <SubType>Form</SubType>
     </Compile>
