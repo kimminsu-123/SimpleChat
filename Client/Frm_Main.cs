@@ -23,7 +23,6 @@ namespace Client
             EventManager.Instance.AddListener(EventType.OnInqChatRooms, OnEvent);
             EventManager.Instance.AddListener(EventType.OnCreateChatRoom, OnEvent);
             EventManager.Instance.AddListener(EventType.OnLeaveChatRoom, OnEvent);
-            EventManager.Instance.AddListener(EventType.OnChatSend, OnEvent);
 
             lblUserName.Text = Util.User?.NickName;
 
@@ -50,6 +49,8 @@ namespace Client
                         HandleInqFriendList(list);
                         break;
                     case EventType.OnInqChatRooms:
+                        if (serverMsg.RequesterIP != NetworkManager.Instance.ChatServer.LocalEndPoint.Address.ToString()) break;
+                        if (serverMsg.RequesterPort != NetworkManager.Instance.ChatServer.LocalEndPoint.Port) break;
                         var chatRooms = JsonSerializer.Deserialize<List<ChatRoomInfo>>(serverMsg.Message);
                         HandleInqChatRooms(chatRooms);
                         break;
@@ -83,12 +84,15 @@ namespace Client
 
         private void HandleInqChatRooms(List<ChatRoomInfo> list)
         {
-            var chatRooms = list.Where(x => x.Users.Any(u => u.User.Id.Equals(Util.User.Id))).ToList();
+            var chatRooms = list
+                .Where(x => x.Users.Any(u => u.User.Id.Equals(Util.User.Id)))
+                .ToList();
             if (chatRooms == null || chatRooms.Count <= 0) return;
 
             layoutChatRooms.Controls.Clear();
+
             foreach (var room in chatRooms)
-            {
+            { 
                 ChatRoom roomUI = new ChatRoom()
                 {
                     ChatRoomInfo = room,
@@ -102,7 +106,7 @@ namespace Client
         {
             if (roomInfo == null) return;
             if (!roomInfo.Users.Any(u => u.User.Id.Equals(Util.User.Id))) return;
-            
+
             ChatRoom roomUI = new ChatRoom()
             {
                 ChatRoomInfo = roomInfo,
@@ -113,6 +117,9 @@ namespace Client
 
         private void HandleLeaveChatRoom(ServerMessage serverMsg)
         {
+            if (serverMsg.RequesterIP != NetworkManager.Instance.ChatServer.LocalEndPoint.Address.ToString()) return;
+            if (serverMsg.RequesterPort != NetworkManager.Instance.ChatServer.LocalEndPoint.Port) return;
+
             var chatRoom = JsonSerializer.Deserialize<ChatRoomInfo>(serverMsg.Message);
             if (chatRoom == null)
             {
@@ -143,7 +150,6 @@ namespace Client
             EventManager.Instance.RemoveListener(EventType.OnInqChatRooms, OnEvent);
             EventManager.Instance.RemoveListener(EventType.OnCreateChatRoom, OnEvent);
             EventManager.Instance.RemoveListener(EventType.OnLeaveChatRoom, OnEvent);
-            EventManager.Instance.RemoveListener(EventType.OnChatSend, OnEvent);
 
             Process.GetCurrentProcess().Kill();
         }
@@ -191,10 +197,10 @@ namespace Client
 
             users.Add(new ChatRoomUser() { User = Util.User, Flag = ChatRoomUserFlag.Normal });
 
-            foreach(ListViewItem item in listFriendList.SelectedItems)
+            foreach (ListViewItem item in listFriendList.SelectedItems)
             {
                 var user = new UserInfo(item.SubItems[1].Text, "", item.SubItems[2].Text);
-                users.Add(new ChatRoomUser() { User = user, Flag = ChatRoomUserFlag.Normal});
+                users.Add(new ChatRoomUser() { User = user, Flag = ChatRoomUserFlag.Normal });
             }
 
             var chatRoom = new ChatRoomInfo()

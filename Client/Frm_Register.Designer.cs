@@ -138,7 +138,7 @@
             Name = "Frm_Register";
             StartPosition = FormStartPosition.CenterParent;
             Text = "회원가입";
-            FormClosing += Frm_Register_FormClosing;
+            FormClosed += Frm_Register_FormClosed;
             Load += Frm_Register_Load;
             ResumeLayout(false);
             PerformLayout();

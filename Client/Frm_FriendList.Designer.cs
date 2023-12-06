@@ -197,7 +197,7 @@
             Name = "Frm_FriendList";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "친구 목록";
-            FormClosing += Frm_FriendList_FormClosing;
+            FormClosed += Frm_FriendList_FormClosed;
             Load += Frm_FriendList_Load;
             ResumeLayout(false);
             PerformLayout();

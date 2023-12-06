@@ -38,6 +38,9 @@ namespace Chungkang.GameNetwork.Network.Handler
                 case ServerMessageFlag.SendChat:
                     type = EventType.OnReceiveChat;
                     break;
+                case ServerMessageFlag.InqChatsInRoom:
+                    type = EventType.OnInqChatsInRoom;
+                    break;
             }
 
             EventManager.Instance.PostNotification(type, this, serverMsg);

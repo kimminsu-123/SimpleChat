@@ -5,7 +5,12 @@ namespace Chungkang.GameNetwork.Network.Sender
 {
     public class ChattingMessageSender : MessageSender
     {
-        public ChattingMessageSender(TCPServer server) : base(server) { }
+        private object _lockSockets;
+
+        public ChattingMessageSender(TCPServer server) : base(server) 
+        {
+            _lockSockets = new object();    
+        }
 
         protected override void SendMessage()
         {
@@ -26,9 +31,12 @@ namespace Chungkang.GameNetwork.Network.Sender
 
         private void SendAll(WrapperMessage msg)
         {
-            foreach(var key in _server.ClientSockets.Keys)
+            lock (_lockSockets)
             {
-                _server.SendTo(key, msg);
+                foreach (var key in _server.ClientSockets.Keys)
+                {
+                    _server.SendTo(key, msg);
+                }
             }
         }
     }

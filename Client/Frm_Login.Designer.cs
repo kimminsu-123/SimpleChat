@@ -107,7 +107,7 @@
             Name = "Frm_Login";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "로그인";
-            FormClosing += Frm_Login_FormClosing;
+            FormClosed += Frm_Login_FormClosed;
             Load += Frm_Login_Load;
             ResumeLayout(false);
             PerformLayout();

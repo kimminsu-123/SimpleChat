@@ -284,7 +284,7 @@ namespace Client
             UpdateFriendList();
         }
 
-        private void Frm_FriendList_FormClosing(object sender, FormClosingEventArgs e)
+        private void Frm_FriendList_FormClosed(object sender, FormClosedEventArgs e)
         {
             EventManager.Instance.RemoveListener(EventType.OnInqFriendList, OnEvent);
             EventManager.Instance.RemoveListener(EventType.OnInqFriendRequestList, OnEvent);

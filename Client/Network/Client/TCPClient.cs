@@ -17,6 +17,8 @@ namespace Chungkang.GameNetwork.Network.Client
         protected readonly int lingerTimeout = 5;
         protected IPEndPoint localEndPoint;
 
+        public IPEndPoint LocalEndPoint => localEndPoint;
+
         public TCPClient(string ip, int port)
         {
             serverAddr = new IPEndPoint(IPAddress.Parse(ip), port);    
@@ -75,7 +77,7 @@ namespace Chungkang.GameNetwork.Network.Client
         {
             if (!socket.Connected) throw new Exception("Socket is not connected");
 
-            var sizeBuf = new byte[4];
+            var sizeBuf = new byte[10];
             var ret = 0;
 
             while (true)
@@ -88,11 +90,27 @@ namespace Chungkang.GameNetwork.Network.Client
                     if (ret <= 0) break;
 
                     var size = int.Parse(Encoding.UTF8.GetString(sizeBuf));
-                    var dataBuf = new byte[size];
-                    ret = socket.Receive(dataBuf);
-                    if (ret <= 0) break;
+                    var ms = new MemoryStream();
 
-                    var json = Encoding.UTF8.GetString(dataBuf);
+                    while (size > 0)
+                    {
+                        byte[] dataBuf;
+                        if (size < socket.ReceiveBufferSize)
+                            dataBuf = new byte[size];
+                        else
+                            dataBuf = new byte[socket.ReceiveBufferSize];
+
+                        ret = socket.Receive(dataBuf);
+                        if (ret <= 0) break;
+
+                        size -= ret;
+
+                        ms.Write(dataBuf, 0, dataBuf.Length);
+                    }
+
+                    ms.Dispose();
+
+                    var json = Encoding.UTF8.GetString(ms.ToArray());
                     var wrapperMsg = JsonSerializer.Deserialize<WrapperMessage>(json);
 
                     if (wrapperMsg == null) continue;
@@ -115,7 +133,7 @@ namespace Chungkang.GameNetwork.Network.Client
 
             var str = JsonSerializer.Serialize(message);
             var sendBuf = Encoding.UTF8.GetBytes(str);
-            var size = $"{sendBuf.Length:D4}";
+            var size = $"{sendBuf.Length:D10}";
             var sizeBuf = Encoding.UTF8.GetBytes(size);
 
             try

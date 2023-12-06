@@ -12,8 +12,6 @@ namespace Chungkang.GameNetwork.Manager
     {
         OnLogin,
         OnRegister,
-        OnChatSend,
-        OnChatReceive,
 
         OnInqFriendList,
         OnInqFriendRequestList,
@@ -25,7 +23,8 @@ namespace Chungkang.GameNetwork.Manager
         OnInqChatRooms,
         OnCreateChatRoom,
         OnLeaveChatRoom,
-        OnReceiveChat
+        OnReceiveChat,
+        OnInqChatsInRoom
     }
 
     public class EventManager
@@ -55,7 +54,7 @@ namespace Chungkang.GameNetwork.Manager
             if(!_listeners.ContainsKey(type))
                 _listeners.Add(type, new List<OnEvent>());
 
-            _listeners[type].Add(onEvent);
+            _listeners[type]?.Add(onEvent);
         }
 
         public void RemoveListener(EventType type, OnEvent onEvent) 
@@ -63,7 +62,7 @@ namespace Chungkang.GameNetwork.Manager
             if (!_listeners.ContainsKey(type)) return;
             if (!_listeners[type].Contains(onEvent)) return;
 
-            _listeners[type].Remove(onEvent);
+            _listeners[type]?.Remove(onEvent);
         }
 
         public void PostNotification(EventType type, object sender, params object[] args)
@@ -72,7 +71,7 @@ namespace Chungkang.GameNetwork.Manager
 
             foreach (var listener in _listeners[type])
             {
-                listener.Invoke(type, sender, args);
+                listener?.Invoke(type, sender, args);
             }
         }
     }

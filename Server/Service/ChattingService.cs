@@ -1,5 +1,6 @@
 ﻿using Chungkang.GameNetwork.Common.Util;
 using Chungkang.GameNetwork.Database.Service;
+using System;
 
 namespace Chungkang.GameNetwork.Service
 {
@@ -30,6 +31,8 @@ namespace Chungkang.GameNetwork.Service
 
         private int GetNewRoomId()
         {
+            if (_rooms.Count <= 0) return 0;
+
             return _rooms.Max(x => x.Id) + 1;
         }
 
@@ -71,7 +74,7 @@ namespace Chungkang.GameNetwork.Service
 
         public List<ChatRoomInfo> InqChatRooms(UserInfo user)
         {
-            if (_rooms.Count <= 0) throw new Exception("가져올 수 있는 채팅 방이 존재하지 않습니다.");
+            if (_rooms.Count <= 0) return _rooms;
 
             return _rooms.Where(r => r.Users.Any(u => u.User.Id.Equals(user.Id) && u.Flag == ChatRoomUserFlag.Normal)).ToList();
         }
@@ -81,6 +84,18 @@ namespace Chungkang.GameNetwork.Service
             try
             {
                 _service.SendChat(chat);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<Chat> InqAllChatsInRoom(ChatRoomInfo room)
+        {
+            try
+            {
+                return _service.InqAllChatsInRoom(room);
             }
             catch (Exception)
             {

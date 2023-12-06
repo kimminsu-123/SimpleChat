@@ -25,7 +25,8 @@ namespace Client
             }
 
             MessageBox.Show(serverMsg.Message, "성공", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            Close();
+
+            Invoke(() => Close());
         }
 
         private void btnRegister_Click(object sender, EventArgs e)
@@ -82,7 +83,7 @@ namespace Client
             }
         }
 
-        private void Frm_Register_FormClosing(object sender, FormClosingEventArgs e)
+        private void Frm_Register_FormClosed(object sender, FormClosedEventArgs e)
         {
             EventManager.Instance.RemoveListener(EventType.OnRegister, OnRegisterCallback);
         }

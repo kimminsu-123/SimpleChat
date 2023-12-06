@@ -88,7 +88,8 @@ namespace Chungkang.GameNetwork.Network.Server
                 clientThread.Start(clientSocket);
 
                 var clientAddr = clientSocket.RemoteEndPoint as IPEndPoint;
-                lock (_lockClients) _clientSockets.Add(clientAddr, clientSocket);
+                lock (_lockClients) 
+                    _clientSockets.Add(clientAddr, clientSocket);
                 Console.WriteLine($"[{GetType().Name}] : Client 접속 ({clientAddr})");
             }
 
@@ -101,7 +102,7 @@ namespace Chungkang.GameNetwork.Network.Server
             var clientSocket = sock as Socket;
             if (clientSocket == null) throw new NullReferenceException("sock as Socket is Null");
 
-            var sizeBuf = new byte[4];
+            var sizeBuf = new byte[10];
             var addr = clientSocket.RemoteEndPoint as IPEndPoint;
 
             while (true)
@@ -161,7 +162,7 @@ namespace Chungkang.GameNetwork.Network.Server
             Console.WriteLine($"[{GetType().Name}] : 서버가 정상 동작합니다.");
         }
 
-        public virtual void SendTo(IPEndPoint address, WrapperMessage msg)
+        public void SendTo(IPEndPoint address, WrapperMessage msg)
         {
             Socket clientSocket;
 
@@ -173,7 +174,7 @@ namespace Chungkang.GameNetwork.Network.Server
 
             var sendStr = JsonSerializer.Serialize(msg);
             var sendBuf = Encoding.UTF8.GetBytes(sendStr);
-            var sizeStr = $"{sendBuf.Length:D4}";
+            var sizeStr = $"{sendBuf.Length:D10}";
             var sizeBuf = Encoding.UTF8.GetBytes(sizeStr);
 
             try

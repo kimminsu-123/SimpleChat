@@ -1,5 +1,6 @@
 ﻿using Chungkang.GameNetwork.Common.Util;
 using Chungkang.GameNetwork.Utils;
+using System.Collections.Generic;
 
 namespace Chungkang.GameNetwork.Database.Service
 {
@@ -180,6 +181,57 @@ VALUES (@CHATROOM_ID, @SENDER, @SEND_DTTM, @MESSAGE)
             catch (Exception)
             {
                 Handler.RollbackTransaction();
+                throw;
+            }
+            finally
+            {
+                parameter.Dispose();
+            }
+        }
+
+        public List<Chat> InqAllChatsInRoom(ChatRoomInfo room)
+        {
+            var chatList = new List<Chat>();
+            var sql = @"
+SELECT USER_M.ID, USER_M.NICKNAME, T_CHAT.SEND_DTTM, T_CHAT.MESSAGE
+FROM T_CHAT
+INNER JOIN USER_M
+ON USER_M.ID = T_CHAT.SENDER
+WHERE T_CHAT.CHATROOM_ID = @CHATROOM_ID
+";
+
+            var parameter = new Params()
+            {
+                new Param("@CHATROOM_ID", room.Id),
+            };
+
+            try
+            {
+                var reader = Handler.ExecuteReader(sql, parameter);
+                while (reader.Read())
+                {
+                    var userId = (string)reader["ID"];
+                    var nickName = (string)reader["NICKNAME"];
+                    var sendDttm = DateTime.Parse((string)reader["SEND_DTTM"]);
+                    var message = (string)reader["MESSAGE"];
+                    
+                    var sender = new UserInfo(userId, "", nickName);
+
+                    var chat = new Chat()
+                    {
+                        ChatRoom = room,
+                        Sender = sender,
+                        SendDttm = sendDttm,
+                        Message = message
+                    };
+
+                    chatList.Add(chat);
+                }
+
+                return chatList;
+            }
+            catch (Exception)
+            {
                 throw;
             }
             finally

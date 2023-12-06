@@ -31,7 +31,6 @@
             btnFriendList = new Button();
             lblUserName = new Label();
             layoutChatRooms = new TableLayoutPanel();
-            chatRoom1 = new ChatRoom();
             btnRefresh = new Button();
             btnCreateRoom = new Button();
             listFriendList = new ListView();
@@ -40,6 +39,7 @@
             ColFLNickname = new ColumnHeader();
             txtRoomName = new TextBox();
             label1 = new Label();
+            chatRoom1 = new ChatRoom();
             layoutChatRooms.SuspendLayout();
             SuspendLayout();
             // 
@@ -68,7 +68,7 @@
             layoutChatRooms.AutoScroll = true;
             layoutChatRooms.ColumnCount = 1;
             layoutChatRooms.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            layoutChatRooms.Controls.Add(chatRoom1, 0, 6);
+            layoutChatRooms.Controls.Add(chatRoom1);
             layoutChatRooms.Location = new Point(103, 48);
             layoutChatRooms.Name = "layoutChatRooms";
             layoutChatRooms.RowCount = 7;
@@ -81,15 +81,6 @@
             layoutChatRooms.RowStyles.Add(new RowStyle());
             layoutChatRooms.Size = new Size(307, 172);
             layoutChatRooms.TabIndex = 0;
-            // 
-            // chatRoom1
-            // 
-            chatRoom1.BackColor = Color.Silver;
-            chatRoom1.ChatRoomInfo = null;
-            chatRoom1.Location = new Point(3, 3);
-            chatRoom1.Name = "chatRoom1";
-            chatRoom1.Size = new Size(300, 51);
-            chatRoom1.TabIndex = 0;
             // 
             // btnRefresh
             // 
@@ -157,6 +148,15 @@
             label1.TabIndex = 12;
             label1.Text = "방 이름";
             // 
+            // chatRoom1
+            // 
+            chatRoom1.BackColor = Color.Silver;
+            chatRoom1.ChatRoomInfo = null;
+            chatRoom1.Location = new Point(3, 3);
+            chatRoom1.Name = "chatRoom1";
+            chatRoom1.Size = new Size(300, 51);
+            chatRoom1.TabIndex = 0;
+            // 
             // Frm_Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -187,7 +187,6 @@
         private Label lblUserName;
         private TableLayoutPanel layoutChatRooms;
         private Button btnRefresh;
-        private ChatRoom chatRoom1;
         private Button btnCreateRoom;
         private ListView listFriendList;
         private ColumnHeader ColFLSeq;
@@ -195,5 +194,6 @@
         private ColumnHeader ColFLNickname;
         private TextBox txtRoomName;
         private Label label1;
+        private ChatRoom chatRoom1;
     }
 }

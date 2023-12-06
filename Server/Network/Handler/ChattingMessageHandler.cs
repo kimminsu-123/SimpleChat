@@ -2,6 +2,7 @@
 using Chungkang.GameNetwork.Common.Util;
 using Chungkang.GameNetwork.Network.Sender;
 using Chungkang.GameNetwork.Service;
+using System;
 using System.Net.NetworkInformation;
 using System.Text.Json;
 
@@ -55,6 +56,10 @@ namespace Chungkang.GameNetwork.Network.Handler
                         var chat = JsonSerializer.Deserialize<Chat>(msg.JsonMessage);
                         serverMsg.ReturnFlag = HandleSendChat(chat, out detailMsg, out retValue);
                         break;
+                    case MessageFlag.InqChatsInRoom:
+                        roomInfo = JsonSerializer.Deserialize<ChatRoomInfo>(msg.JsonMessage);
+                        serverMsg.ReturnFlag = HandleInqChatsInRoom(roomInfo, out detailMsg, out retValue);
+                        break;
                     default:
                         detailMsg = string.Empty;
                         retValue = false;
@@ -70,6 +75,8 @@ namespace Chungkang.GameNetwork.Network.Handler
 
             serverMsg.Message = detailMsg;
             serverMsg.ReturnValue = retValue;
+            serverMsg.RequesterIP = msg.FromIP;
+            serverMsg.RequesterPort = msg.FromPort;
 
             sendMsg.Flag = retValue ? MessageFlag.Success : MessageFlag.Fail;
             sendMsg.JsonMessage = JsonSerializer.Serialize(serverMsg);
@@ -140,7 +147,22 @@ namespace Chungkang.GameNetwork.Network.Handler
                 throw;
             }
 
-            return ServerMessageFlag.LeaveChatRoom;
+            return ServerMessageFlag.SendChat;
+        }
+
+        private ServerMessageFlag HandleInqChatsInRoom(ChatRoomInfo room, out string msg, out bool retValue)
+        {
+            try
+            {
+                msg = JsonSerializer.Serialize(_chattingService.InqAllChatsInRoom(room)); 
+                retValue = true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return ServerMessageFlag.InqChatsInRoom;
         }
     }
 }

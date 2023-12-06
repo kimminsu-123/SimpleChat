@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chungkang.GameNetwork.Common.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,7 @@ namespace Chungkang.GameNetwork.Common.Message
         CreateChatRoom,
         LeaveChatRoom,
         SendChat,
+        InqChatsInRoom,
 
         // Server
         Success = 200,

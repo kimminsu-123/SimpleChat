@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -111,7 +112,8 @@ namespace Chungkang.GameNetwork.Common.Util
         InqChatRooms,
         CreateChatRoom,
         LeaveChatRoom,
-        SendChat
+        SendChat,
+        InqChatsInRoom
     }
 
     [Serializable]
@@ -123,6 +125,10 @@ namespace Chungkang.GameNetwork.Common.Util
         public bool ReturnValue { get; set; }
         [JsonPropertyName("retMessage")]
         public string Message { get; set; }
+        [JsonPropertyName("requesterIp")]
+        public string RequesterIP { get; set; }
+        [JsonPropertyName("requesterPort")]
+        public int RequesterPort { get; set; }
     }
 
     [Serializable]

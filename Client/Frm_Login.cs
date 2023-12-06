@@ -76,7 +76,7 @@ namespace Client
             new Frm_Register().ShowDialog();
         }
 
-        private void Frm_Login_FormClosing(object sender, FormClosingEventArgs e)
+        private void Frm_Login_FormClosed(object sender, FormClosedEventArgs e)
         {
             EventManager.Instance.RemoveListener(EventType.OnLogin, OnLoginCallback);
         }

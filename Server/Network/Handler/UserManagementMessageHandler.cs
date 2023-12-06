@@ -88,9 +88,12 @@ namespace Chungkang.GameNetwork.Network.Handler
 
             serverMsg.Message = detailMsg;
             serverMsg.ReturnValue = retValue;
+            serverMsg.RequesterIP = msg.FromIP;
+            serverMsg.RequesterPort = msg.FromPort;
 
             sendMsg.Flag = retValue ? MessageFlag.Success : MessageFlag.Fail;
             sendMsg.JsonMessage = JsonSerializer.Serialize(serverMsg);
+            
             _sender.EnqueueMessage(sendMsg);
         }
 
